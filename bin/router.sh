@@ -13,6 +13,8 @@ iptables -t nat -A POSTROUTING -j MASQUERADE
 
 #Open inbond NAT ports
 while read aLine; do
+  #Skip lines with comments
+  [[ '$aLine' == \#* ]] && continue
   NAME=$(echo $aLine|cut -d' ' -f1)
   IP=$(echo $aLine|cut -d' ' -f2)
   PORTS=$(echo $aLine|cut -d' ' -f3)
