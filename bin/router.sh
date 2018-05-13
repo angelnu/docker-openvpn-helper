@@ -13,6 +13,10 @@ iptables -t nat -A POSTROUTING -j MASQUERADE
 
 #Open inbond NAT ports
 while read aLine; do
+  case "$aLine" in
+    \#*) continue;;
+    *) echo Processing: $aLine ;;
+  esac
   #Skip lines with comments
   [[ '$aLine' == \#* ]] && continue
   NAME=$(echo $aLine|cut -d' ' -f1)
