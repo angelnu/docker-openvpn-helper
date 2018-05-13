@@ -17,4 +17,4 @@ server=/local/${DNS_ORG}">>/etc/dnsmasq.conf
 #TBD: find a better way
 sleep 10
 
-exec dnsmasq -k -C /config/dhclient.conf
+exec dnsmasq -k
