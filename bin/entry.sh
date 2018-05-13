@@ -1,8 +1,8 @@
-#!/bin/sh -ecx
+#!/bin/sh -ex
 
 #Load main settings
 cat /config/settings.sh
-. /config/settings.sh
+#. /config/settings.sh
 
 #derived settings
 OPENVPN_ROUTER_IP="$(dig +short $OPENVPN_ROUTER_NAME)"

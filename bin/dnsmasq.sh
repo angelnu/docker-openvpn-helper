@@ -1,4 +1,5 @@
-#!/bin/sh -ecx
+#!/bin/sh -ex
+
 cat /config/settings.sh
 . /config/settings.sh
 
