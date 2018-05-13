@@ -2,8 +2,6 @@
 cat /config/settings.sh
 . /config/settings.sh
 
-apk add --no-cache dnsmasq iproute2
-
 #Block default output traffic
 iptables --policy OUTPUT DROP
 

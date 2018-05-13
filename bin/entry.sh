@@ -18,7 +18,7 @@ ip link set up dev vxlan0
 route del default gw $GW_ORG
 if [ -z "$NAT_ENTRY" ]; then
   echo "Get dynamic IP"
-  dhclient vxlan0
+  dhclient -c /config/dhclient.conf vxlan0
 else
   IP=$(echo $NAT_ENTRY|cut -d' ' -f2)
   VXLAN_IP="${VXLAN_IP_NETWORK}.${IP}"
