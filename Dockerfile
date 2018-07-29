@@ -10,7 +10,8 @@ COPY qemu/qemu-$ARCH-static* /usr/bin/
 # bind-tools -> bind
 # dhclient -> get dynamic IP
 # dnsmasq -> DNS & DHCP server
-RUN apk add --no-cache dnsmasq iproute2 bind-tools dhclient
+# coreutils -> need REAL chowm and chmod for dhclient (it uses reference option not supported in busybox)
+RUN apk add --no-cache coreutils dnsmasq iproute2 bind-tools dhclient
 
 COPY config /config
 COPY bin /usr/local/bin
