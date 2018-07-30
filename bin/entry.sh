@@ -31,4 +31,4 @@ ping -c1 $VXLAN_ROUTER_IP
 
 #Set DNS
 #route add $DNS_ORG gw $GW_ORG
-cp -av /etc/resolv.conf.dhclient /etc_shared/resolv.conf
+cp -av /etc/resolv.conf.dhclient* /etc_shared/resolv.conf
