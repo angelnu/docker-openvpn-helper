@@ -39,6 +39,11 @@ echo "Reject other traffic"
 iptables -A FORWARD -i tun0 -j REJECT
 #iptables -A INPUT -i tun0 -j REJECT
 
+#Do not forward any traffic that does not leave through tun0
+# The openvpn will also add drop rules but this is to ensure we block even if VPN is not connecting
+iptables --policy FORWARD DROP
+iptables -I FORWARD -o tun0 -j ACCEPT
+
 #Do not allow outbound traffic on eth0 beyond VPN and local traffic
 iptables --policy OUTPUT DROP
 iptables -A OUTPUT -p udp --dport 443 -j ACCEPT
