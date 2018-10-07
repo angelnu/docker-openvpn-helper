@@ -46,7 +46,7 @@ iptables -I FORWARD -o tun0 -j ACCEPT
 
 #Do not allow outbound traffic on eth0 beyond VPN and local traffic
 iptables --policy OUTPUT DROP
-iptables -A OUTPUT -p udp --dport 443 -j ACCEPT
+iptables -A OUTPUT --dport 443 -j ACCEPT #VPN traffic over eth
 iptables -A OUTPUT -d 10.0.0.0/8  -j ACCEPT
 iptables -A OUTPUT -d 192.168.0.0/16  -j ACCEPT
 iptables -A OUTPUT -o tun0 -j ACCEPT
