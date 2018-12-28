@@ -9,13 +9,21 @@ OPENVPN_ROUTER_IP="$(dig +short $OPENVPN_ROUTER_NAME)"
 GW_ORG=$(route |awk '$1=="default"{print $2}')
 NAT_ENTRY="$(grep $(hostname) /config/nat.conf||true)"
 
+#remove vxlan0 if this is re-executed
+ip addr|grep -q vxlan0 && ip link del vxlan0
+
 #Create tunnel NIC
 ip link add vxlan0 type vxlan id $VXLAN_ID dev eth0 dstport 0 || true
 bridge fdb append to 00:00:00:00:00:00 dst $OPENVPN_ROUTER_IP dev vxlan0
 ip link set up dev vxlan0
 
-#Configure IP and default GW
-route del default gw $GW_ORG
+#Delete default GW to prevent outgoing traffic to leave this docker
+echo "Deleting existing default GWs"
+test -n "$GW_ORG" && route del default gw $GW_ORG
+#To be sure delete all default GWs
+ip route del 0/0
+
+#Configure IP and default GW though the VPN docker
 if [ -z "$NAT_ENTRY" ]; then
   echo "Get dynamic IP"
   dhclient -cf /config/dhclient.conf vxlan0
