@@ -10,7 +10,9 @@ GW_ORG=$(route |awk '$1=="default"{print $2}')
 NAT_ENTRY="$(grep $(hostname) /config/nat.conf||true)"
 
 #remove vxlan0 if this is re-executed
-ip addr|grep -q vxlan0 && ip link del vxlan0
+if ip addr|grep -q vxlan0; then
+  ip link del vxlan0
+fi
 
 #Create tunnel NIC
 ip link add vxlan0 type vxlan id $VXLAN_ID dev eth0 dstport 0 || true
@@ -19,8 +21,6 @@ ip link set up dev vxlan0
 
 #Delete default GW to prevent outgoing traffic to leave this docker
 echo "Deleting existing default GWs"
-test -n "$GW_ORG" && route del default gw $GW_ORG
-#To be sure delete all default GWs
 ip route del 0/0
 
 #Configure IP and default GW though the VPN docker
