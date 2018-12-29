@@ -54,7 +54,7 @@ ping -c1 $VXLAN_ROUTER_IP
 #route add $DNS_ORG gw $GW_ORG
 cp -av /etc/resolv.conf.dhclient* /etc_shared/resolv.conf
 
-if [ -n $"FIRST_BOOT" ]; then
+if [ -n "$FIRST_BOOT" ]; then
   echo "First boot (init container): ending now."
   exit 0
 else
