@@ -51,3 +51,17 @@ ping -c1 $VXLAN_ROUTER_IP
 #Set DNS
 #route add $DNS_ORG gw $GW_ORG
 cp -av /etc/resolv.conf.dhclient* /etc_shared/resolv.conf
+
+if hostname|grep -qi "init-vxlan"; then
+  echo "init container detected: ending now."
+  exit 0
+else
+  echo "no-init container detected: stay on monitoring connection to VPN"
+  while true; do
+    # Sleep while reacting to signals
+    sleep 600 &
+    wait $!
+    #Ping router
+    ping -c1 $VXLAN_ROUTER_IP
+  done
+fi
