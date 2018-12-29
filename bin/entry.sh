@@ -9,7 +9,7 @@ cat /config/settings.sh
 if ip addr|grep -q vxlan0; then
   ip link del vxlan0
 else
-  ip route add $(ip route get ${DNS_ORG}|head -1)
+  ip route add $(ip route get ${DNS_ORG}|head -1) || /bin/true
 fi
 
 #derived settings
