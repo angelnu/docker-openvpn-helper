@@ -9,7 +9,9 @@ cat /config/settings.sh
 if ip addr|grep -q vxlan0; then
   ip link del vxlan0
 else
-  ip route add $(ip route get ${DNS_ORG}|head -1) || /bin/true
+  K8S_GW_ROUTE=$(ip route get ${DNS_ORG}|head -1)
+  K8S_GW_ROUTE=${K8S_GW_ROUTE%%uid*}
+  ip route add $K8S_GW_ROUTE
 fi
 
 #derived settings
