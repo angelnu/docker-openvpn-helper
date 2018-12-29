@@ -12,6 +12,10 @@ else
   K8S_GW_ROUTE=$(ip route get ${DNS_ORG}|head -1)
   K8S_GW_ROUTE=${K8S_GW_ROUTE%%uid*}
   ip route add $K8S_GW_ROUTE
+
+  #Delete default GW to prevent outgoing traffic to leave this docker
+  echo "Deleting existing default GWs"
+  ip route del 0/0
 fi
 
 #derived settings
@@ -23,10 +27,6 @@ NAT_ENTRY="$(grep $(hostname) /config/nat.conf||true)"
 ip link add vxlan0 type vxlan id $VXLAN_ID dev eth0 dstport 0 || true
 bridge fdb append to 00:00:00:00:00:00 dst $OPENVPN_ROUTER_IP dev vxlan0
 ip link set up dev vxlan0
-
-#Delete default GW to prevent outgoing traffic to leave this docker
-echo "Deleting existing default GWs"
-ip route del 0/0
 
 #After this point nothing should be reachable -> check
 if ping -c 1 -W 1000 8.8.8.8; then
