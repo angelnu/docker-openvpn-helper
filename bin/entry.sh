@@ -4,15 +4,18 @@
 cat /config/settings.sh
 . /config/settings.sh
 
-#derived settings
-OPENVPN_ROUTER_IP="$(dig +short $OPENVPN_ROUTER_NAME)"
-GW_ORG=$(route |awk '$1=="default"{print $2}')
-NAT_ENTRY="$(grep $(hostname) /config/nat.conf||true)"
-
-#remove vxlan0 if this is re-executed
+#in re-entry we need to remove the vxlan
+#on first entry set a routing rule to the k8s DNS server
 if ip addr|grep -q vxlan0; then
   ip link del vxlan0
+else
+  ip route add $(ip route get ${DNS_ORG})
 fi
+
+#derived settings
+OPENVPN_ROUTER_IP="$(dig +short $OPENVPN_ROUTER_NAME @${DNS_ORG})"
+GW_ORG=$(route |awk '$1=="default"{print $2}')
+NAT_ENTRY="$(grep $(hostname) /config/nat.conf||true)"
 
 #Create tunnel NIC
 ip link add vxlan0 type vxlan id $VXLAN_ID dev eth0 dstport 0 || true
@@ -22,6 +25,12 @@ ip link set up dev vxlan0
 #Delete default GW to prevent outgoing traffic to leave this docker
 echo "Deleting existing default GWs"
 ip route del 0/0
+
+#After this point nothing should be reachable -> check
+if ping -c 1 -W 1000 8.8.8.8; then
+  echo "WE SHOULD NOT BE ABLE TO PING -> EXIT"
+  exit 255
+fi
 
 #Configure IP and default GW though the VPN docker
 if [ -z "$NAT_ENTRY" ]; then
