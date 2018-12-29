@@ -16,6 +16,8 @@ else
   #Delete default GW to prevent outgoing traffic to leave this docker
   echo "Deleting existing default GWs"
   ip route del 0/0
+
+  FIRST_BOOT=true
 fi
 
 #derived settings
@@ -52,11 +54,11 @@ ping -c1 $VXLAN_ROUTER_IP
 #route add $DNS_ORG gw $GW_ORG
 cp -av /etc/resolv.conf.dhclient* /etc_shared/resolv.conf
 
-if hostname|grep -qi "init-vxlan"; then
-  echo "init container detected: ending now."
+if [ -n $"FIRST_BOOT" ]; then
+  echo "First boot (init container): ending now."
   exit 0
 else
-  echo "no-init container detected: stay on monitoring connection to VPN"
+  echo "Not first boot: stay on monitoring connection to VPN"
   while true; do
     # Sleep while reacting to signals
     sleep 600 &
