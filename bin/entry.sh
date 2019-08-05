@@ -10,18 +10,16 @@ if ip addr|grep -q vxlan0; then
   ip link del vxlan0
 fi
 
-DEFAULT_GW_REMOVED_MARKER=/etc_shared/default_gw_removed
-if [ ! -e "$DEFAULT_GW_REMOVED_MARKER" ]; then
-  touch $DEFAULT_GW_REMOVED_MARKER
 
-  K8S_GW_ROUTE=$(ip route get ${DNS_ORG}|head -1)
-  K8S_GW_ROUTE=${K8S_GW_ROUTE%%uid*}
-  ip route add $K8S_GW_ROUTE
 
-  #Delete default GW to prevent outgoing traffic to leave this docker
-  echo "Deleting existing default GWs"
-  ip route del 0/0
-fi
+K8S_GW_ROUTE=$(ip route get ${DNS_ORG}|head -1)
+K8S_GW_ROUTE=${K8S_GW_ROUTE%%uid*}
+ip route add $K8S_GW_ROUTE || /bin/true
+
+#Delete default GW to prevent outgoing traffic to leave this docker
+echo "Deleting existing default GWs"
+ip route del 0/0 || /bin/true
+
 
 #After this point nothing should be reachable -> check
 if ping -c 1 -W 1000 8.8.8.8; then
